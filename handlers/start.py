@@ -24,9 +24,7 @@ async def req_list(message: Message):
     await message.answer('Введите текст (дата, место, фамилия, номер авто)')
     mssg=message.text
     #time.sleep(10)
-    create_pdf(mssg)
-    with open('out.pdf', "rb") as file:
-        await bot.message.reply_document(file, filename="out.pdf")
+    await create_pdf(mssg)
     #pdf_template = await create_pdf(mssg)
-    #bot.send_document(pdf_template, caption='Ваш PDF файл')
+    await bot.send_document(chat_id=message.chat.id, document=open('D:/out.pdf', 'rb'), caption='Ваш PDF файл')    
     #await bot.send_document(io.BytesIO(output), caption='Ваш PDF файл')
