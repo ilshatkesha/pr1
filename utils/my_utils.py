@@ -8,7 +8,6 @@ from concurrent.futures import ThreadPoolExecutor
 from aiogram import Bot, Dispatcher, types
 from aiogram import F
 from aiogram.filters import Command
-from db_requests.
 #from aiogram import Application
 path_wkhtmltopdf = 'D:/wkhtmltopdf.exe'
 config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -20,6 +19,13 @@ pdf_executor = ThreadPoolExecutor()
 #    return pdfkit.from_string(pdf_template, False)  # Возвращаем байты PDFdef processing_file(file, last_name, first_name, snils):
 #connection = aiosqlite.connect('D:/SQLStudio/database1')
 #cur = connection.cursor()
+async def add_pdf_to_db(file_path):
+    async with aiosqlite.connect('D:/SQLStudio/database1') as connection:
+        async with connection.cursor() as cur:
+            with open(file_path, 'rb') as file:
+                pdf_data = file.read()
+                await cur.execute('INSERT INTO Путевые (Путевой) VALUES (?)', (pdf_data))
+                await connection.commit()
 
 
 async def create_pdf (mssg: str):
@@ -53,7 +59,7 @@ async def create_pdf (mssg: str):
                         #f.write(f2)
                         #f.close()
             
-            await requests.add_pdf_to_bd('D:/out.pdf')
+            await add_pdf_to_db('D:/out.pdf')
             return('out.pdf')
 
             #with open(r'qwezxc123.html', 'r', encoding='utf-8') as f:
