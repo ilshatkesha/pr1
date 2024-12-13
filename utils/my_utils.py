@@ -15,9 +15,9 @@ templ = Environment(loader=FileSystemLoader("D:/"))
 
 pdf_executor = ThreadPoolExecutor()
 
-def split_empl(text):
-     empl = text.split(",")
-     return empl    
+def split_mssg(text):
+     splmsg = text.split(",")
+     return splmsg    
 
 #def create_pdf_sync(pdf_template):
 #    return pdfkit.from_string(pdf_template, False)  # Возвращаем байты PDFdef processing_file(file, last_name, first_name, snils):
@@ -33,15 +33,22 @@ def split_empl(text):
 
 
 async def create_pdf (mssg):
-    num_auto = '326'
-    num = '228'
-    first_date = '123'
-    sec_date = '321'
-    surname = mssg
+    mecanicus = 'Сатлыганов И.Р.'
     async with aiosqlite.connect('D:/SQLStudio/database1') as connection:
         async with connection.cursor() as cur:
-            #auto_mark = str(await cur.execute("SELECT Марка FROM Автомобили WHERE Гос_номер = ?", (num_auto,)).fetchone()[0])
-            #auto_num = str(await cur.execute("SELECT Гос_номер FROM Автомобили WHERE Гос_номер = ?", (num_auto,)).fetchone()[0])
+            data_to_pdf = split_mssg(mssg)
+            number = data_to_pdf[3]
+            surname = data_to_pdf[2]
+            await cur.execute("SELECT Марка FROM Автомобили WHERE Номер = ?", (number,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            auto = str(result)
+            await cur.execute("SELECT Гос_номер FROM Автомобили WHERE Гос_номер = ?", (number,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            auto_num = str(result)
             await cur.execute("SELECT Фамилия FROM Сотрудники WHERE Фамилия = ?", (surname,))
             row = await cur.fetchone()
             if row is not None:
@@ -57,11 +64,36 @@ async def create_pdf (mssg):
             if row is not None:
                  result = row[0]
             snils = str(result)
+            await cur.execute("SELECT ВУ FROM Сотрудники WHERE Фамилия = ?", (surname,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            dl_num = str(result)
+            await cur.execute("SELECT Дата_ВУ FROM Сотрудники WHERE Фамилия = ?", (surname,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            dl_date = str(result)
+            await cur.execute("SELECT СНИЛС FROM Сотрудники WHERE Фамилия = ?", (surname,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            snils = str(result)
+            await cur.execute("SELECT Класс FROM Сотрудники WHERE Фамилия = ?", (surname,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            dl_class = str(result)
+            await cur.execute("SELECT Местоположение FROM Автомобили WHERE Номер = ?", (number,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            location = str(result)
             
-            with open(r'D:/new 1.html', 'r', encoding='utf-8') as f:
+            with open(r'D:/last.html', 'r', encoding='utf-8') as f:
                     file = f.read()
                     template = templ.from_string(file)
-                    pdf_template = template.render({'last_name': last_name, 'first_name': first_name, 'snils': snils, })
+                    pdf_template = template.render({'auto':auto, 'autu_num':auto_num, 'dl_date':dl_date, 'dl_num':dl_num, 'dl_class':dl_class, 'location':location, 'mecanicus':mecanicus, 'last_name': last_name, 'first_name': first_name, 'snils': snils, })
                     await pdfkit.from_string(pdf_template, "D:/out.pdf")
                     #with open('D:/out.pdf', 'w', encoding='utf-8') as f2:
                      #   f2.write(out_file)
