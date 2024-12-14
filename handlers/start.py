@@ -53,7 +53,7 @@ async def capture_mssg(message: Message, state:FSMContext):
 
 @start_router.message(F.text == 'Добавить сотр')
 async def add_car(message: Message, state:FSMContext):
-    await message.answer('Введите текст БЕЗ ПРОБЕЛОВ И ЧЕРЕЗ ЗАПЯТЫЕ!! Фамилия, Имя Отчество, СНИЛС, Серия и номер в.у., Категории в.у., Табельный номер(?))')
+    await message.answer('Введите текст БЕЗ ПРОБЕЛОВ И ЧЕРЕЗ ЗАПЯТЫЕ!! Фамилия, Имя Отчество, СНИЛС, Серия и номер в.у., Дата в.у. Категории в.у., Табельный номер(?))')
     await state.set_state(Form.waiting_empl)
 
 @start_router.message(F.text, Form.waiting_empl)
