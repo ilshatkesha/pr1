@@ -17,7 +17,11 @@ pdf_executor = ThreadPoolExecutor()
 
 def split_mssg(text):
      splmsg = text.split(",")
-     return splmsg    
+     return splmsg  
+ 
+def split_date(text):
+     splmssg = text.split(".")
+     return splmssg   
 
 #def create_pdf_sync(pdf_template):
 #    return pdfkit.from_string(pdf_template, False)  # Возвращаем байты PDFdef processing_file(file, last_name, first_name, snils):
@@ -33,22 +37,37 @@ def split_mssg(text):
 
 
 async def create_pdf (mssg):
-    mecanicus = 'Сатлыганов И.Р.'
+    #mecanicus = 'Сатлыганов И.Р.'
     async with aiosqlite.connect('D:/SQLStudio/database1') as connection:
         async with connection.cursor() as cur:
             data_to_pdf = split_mssg(mssg)
             number = data_to_pdf[3]
             surname = data_to_pdf[2]
+            date_rl = data_to_pdf[0]
+            date_to_split = split_date(date_rl)
+            day = date_to_split[0]
+            mouth = date_to_split[1]
             await cur.execute("SELECT Марка FROM Автомобили WHERE Номер = ?", (number,))
             row = await cur.fetchone()
             if row is not None:
                  result = row[0]
             auto = str(result)
-            await cur.execute("SELECT Гос_номер FROM Автомобили WHERE Гос_номер = ?", (number,))
+            await cur.execute("SELECT Гос_номер FROM Автомобили WHERE Номер = ?", (number,))
             row = await cur.fetchone()
             if row is not None:
                  result = row[0]
             auto_num = str(result)
+            await cur.execute("SELECT Номер FROM Автомобили WHERE Номер = ?", (number,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            num = str(result)
+            await cur.execute("SELECT Механик FROM Автомобили WHERE Номер = ?", (number,))
+            row = await cur.fetchone()
+            if row is not None:
+                 result = row[0]
+            mecanicus = str(result)
+            #print(auto_num)
             await cur.execute("SELECT Фамилия FROM Сотрудники WHERE Фамилия = ?", (surname,))
             row = await cur.fetchone()
             if row is not None:
@@ -93,7 +112,8 @@ async def create_pdf (mssg):
             with open(r'D:/last.html', 'r', encoding='utf-8') as f:
                     file = f.read()
                     template = templ.from_string(file)
-                    pdf_template = template.render({'auto':auto, 'autu_num':auto_num, 'dl_date':dl_date, 'dl_num':dl_num, 'dl_class':dl_class, 'location':location, 'mecanicus':mecanicus, 'last_name': last_name, 'first_name': first_name, 'snils': snils, })
+                    #print(date_rl)
+                    pdf_template = template.render({'first_date':day, 'mouth':mouth, 'end_date':day, 'num':num, 'num_auto':auto_num, 'dl_date':dl_date, 'dl_num':dl_num, 'dl_class':dl_class, 'location':location, 'mecanicus':mecanicus, 'last_name': last_name, 'first_name': first_name, 'snils': snils, })
                     await pdfkit.from_string(pdf_template, "D:/out.pdf")
                     #with open('D:/out.pdf', 'w', encoding='utf-8') as f2:
                      #   f2.write(out_file)

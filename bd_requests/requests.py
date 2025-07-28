@@ -16,7 +16,7 @@ def add_empl(empl_cort):
 def add_auto(auto_cort):
     auto_list = split_mssg(auto_cort)
     print(auto_list)
-    cur.executemany('INSERT INTO Автомобили (Марка, Гос_номер, Местоположение, Номер) VALUES (?,?,?,?)', (auto_list,))
+    cur.executemany('INSERT INTO Автомобили (Марка, Гос_номер, Местоположение, Номер, Механик) VALUES (?,?,?,?,?)', (auto_list,))
     conn.commit()
 
 

@@ -56,17 +56,17 @@ async def add_car(message: Message, state:FSMContext):
     await message.answer('Введите текст БЕЗ ПРОБЕЛОВ И ЧЕРЕЗ ЗАПЯТЫЕ!! Фамилия, Имя Отчество, СНИЛС, Серия и номер в.у., Дата в.у. Категории в.у., Табельный номер(?))')
     await state.set_state(Form.waiting_empl)
 
+@start_router.message(F.text == 'добавить авто')
+async def add_employer(message: Message, state:FSMContext):
+    await message.answer('Введите текст БЕЗ ПРОБЕЛОВ И ЧЕРЕЗ ЗАПЯТЫЕ!! Марка,Гос.номер,Местоположение,номер без букв,Фамилию И.О. механика')
+    await state.set_state(Form.waiting_auto)
+
 @start_router.message(F.text, Form.waiting_empl)
 async def capture_mssg(message: Message, state:FSMContext):
     await state.update_data(mssg=message.text)
     mssg = message.text
     add_empl(mssg)
     await message.answer('Успешный успех, больше так не делайте')
-
-@start_router.message(F.text == 'добавить авто')
-async def add_employer(message: Message, state:FSMContext):
-    await message.answer('Введите текст БЕЗ ПРОБЕЛОВ И ЧЕРЕЗ ЗАПЯТЫЕ!! Марка,Гос.номер,Местоположение,номер без букв')
-    await state.set_state(Form.waiting_auto)
 
 @start_router.message(F.text, Form.waiting_auto)
 async def capture_mssg(message: Message, state:FSMContext):
